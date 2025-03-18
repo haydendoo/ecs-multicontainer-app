@@ -48,10 +48,11 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
+	query := fmt.Sprintf("SELECT token FROM %s WHERE id=? LIMIT 1", DB_NAME)
 	var token string
-	err = db.QueryRow("SELECT token FROM ? LIMIT 1", DB_NAME).Scan(&token)
+	err = db.QueryRow(query, id).Scan(&token)
 	if err != nil && err != sql.ErrNoRows {
-		http.Error(w, "Database query failed", http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Db query failed: %v", err), http.StatusInternalServerError)
 		return
 	}
 	if err != sql.ErrNoRows {
@@ -63,7 +64,8 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to generate token", http.StatusInternalServerError)
 	}
 
-	_, err = db.Exec("INSERT INTO ? (id, token) VALUES (?, ?)", DB_NAME, id, token)
+	query = fmt.Sprintf("INSERT INTO %s (id, token) VALUES (?, ?)", DB_NAME)
+	_, err = db.Exec(query, id, token)
 	if err != nil {
 		http.Error(w, "Failed to insert data into table", http.StatusInternalServerError)
 	}
@@ -84,5 +86,5 @@ func main() {
 
 	http.HandleFunc("/", rootHandler)
 	fmt.Println("Starting server on port 8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe("0.0.0.0:8080", nil))
 }
