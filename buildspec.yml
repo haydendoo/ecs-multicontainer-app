@@ -1,3 +1,32 @@
+# CodeDeploy to ECS version
+# version: 0.2
+#
+# phases:
+#   pre_build:
+#     commands:
+#       - echo Logging in to ECR...
+#       - aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin 314146331900.dkr.ecr.ap-southeast-1.amazonaws.com
+#   build:
+#     commands:
+#       - echo Building docker image...
+#       - docker build -t ecs .
+#   post_build:
+#     commands:
+#       - echo Tagging images...
+#       - IMAGE_TAG=$CODEBUILD_RESOLVED_SOURCE_VERSION
+#       - docker tag ecs:latest 314146331900.dkr.ecr.ap-southeast-1.amazonaws.com/ecs:$IMAGE_TAG
+#       - echo Pushing images...
+#       - docker push 314146331900.dkr.ecr.ap-southeast-1.amazonaws.com/ecs:$IMAGE_TAG
+#       - echo Successfully finished building
+#       - printf '{"ImageURI":"314146331900.dkr.ecr.ap-southeast-1.amazonaws.com/ecs:%s"}' "$IMAGE_TAG" > imageDetail.json
+#       - cat imageDetail.json
+# artifacts:
+#   files:
+#     - imageDetail.json
+#     - appspec.yaml
+#     - taskdef.json
+
+# Native ECS version
 version: 0.2
 
 phases:
@@ -5,22 +34,23 @@ phases:
     commands:
       - echo Logging in to ECR...
       - aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin 314146331900.dkr.ecr.ap-southeast-1.amazonaws.com
+
   build:
     commands:
       - echo Building docker image...
-      - docker build -t ecs .
+      - docker build -t app .
+
   post_build:
     commands:
       - echo Tagging images...
       - IMAGE_TAG=$CODEBUILD_RESOLVED_SOURCE_VERSION
-      - docker tag ecs:latest 314146331900.dkr.ecr.ap-southeast-1.amazonaws.com/ecs:$IMAGE_TAG
+      - docker tag app:latest 314146331900.dkr.ecr.ap-southeast-1.amazonaws.com/app:$IMAGE_TAG
       - echo Pushing images...
-      - docker push 314146331900.dkr.ecr.ap-southeast-1.amazonaws.com/ecs:$IMAGE_TAG
+      - docker push 314146331900.dkr.ecr.ap-southeast-1.amazonaws.com/app:$IMAGE_TAG
       - echo Successfully finished building
-      - printf '{"ImageURI":"314146331900.dkr.ecr.ap-southeast-1.amazonaws.com/ecs:%s"}' "$IMAGE_TAG" > imageDetail.json
-      - cat imageDetail.json
+      - printf '[{"name":"app-web-service","imageUri":"314146331900.dkr.ecr.ap-southeast-1.amazonaws.com/app:%s"}]' "$IMAGE_TAG" > imagedefinitions.json
+      - printf '[{"name":"app-web-service","imageUri":"314146331900.dkr.ecr.ap-southeast-1.amazonaws.com/app:%s"}]' "$IMAGE_TAG" 
+
 artifacts:
   files:
-    - imageDetail.json
-    - appspec.yaml
-    - taskdef.json
+    - imagedefinitions.json

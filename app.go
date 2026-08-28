@@ -38,7 +38,7 @@ func connectDB() (*sql.DB, error) {
 func rootHandler(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
 	if id == "" {
-		fmt.Fprintln(w, "Ok v2")
+		fmt.Fprintln(w, "Ok v3")
 		return
 	}
 
