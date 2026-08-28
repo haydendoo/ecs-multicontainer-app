@@ -48,8 +48,8 @@ phases:
       - echo Pushing images...
       - docker push 314146331900.dkr.ecr.ap-southeast-1.amazonaws.com/app:$IMAGE_TAG
       - echo Successfully finished building
-      - printf '[{"name":"app-web-service","imageUri":"314146331900.dkr.ecr.ap-southeast-1.amazonaws.com/app:%s"}]' "$IMAGE_TAG" > imagedefinitions.json
-      - printf '[{"name":"app-web-service","imageUri":"314146331900.dkr.ecr.ap-southeast-1.amazonaws.com/app:%s"}]' "$IMAGE_TAG" 
+      - printf '[{"name":"Main,"imageUri":"314146331900.dkr.ecr.ap-southeast-1.amazonaws.com/app:%s"}]' "$IMAGE_TAG" > imagedefinitions.json
+      - printf '[{"name":"Main","imageUri":"314146331900.dkr.ecr.ap-southeast-1.amazonaws.com/app:%s"}]' "$IMAGE_TAG" 
 
 artifacts:
   files:
